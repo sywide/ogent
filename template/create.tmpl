@@ -14,6 +14,8 @@
 						{{- $x := "v" }}
 						{{- if $f.IsEnum -}}
 							{{ $x = convertTo $f.Type.String $x }}
+						{{- else if $f.IsJSON -}}
+						  {{ $x = convertTo (printf "ogenToEnt%s%s" $.Name $f.StructField) $x }}
 						{{- else -}}
 							{{ $x = ogenToEnt $f $x }}
 						{{- end }}
@@ -24,6 +26,8 @@
 				{{- $x := print "req." $f.StructField }}
 				{{- if $f.IsEnum -}}
 					{{ $x = convertTo $f.Type.String $x }}
+				{{- else if $f.IsJSON -}}
+						  {{ $x = convertTo (printf "ogenToEnt%s%s" $.Name $f.StructField) $x }}
 				{{- else -}}
 					{{ $x = ogenToEnt $f $x }}
 				{{- end }}

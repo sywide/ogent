@@ -185,6 +185,8 @@ func setFieldExpr(f *gen.Field, schema, rec, ident string) (string, error) {
 		expr := fmt.Sprintf("%s.%s", ident, f.StructField())
 		if f.IsEnum() {
 			expr = convertTo(schema+f.StructField(), expr)
+		} else if f.IsJSON() {
+			expr = convertTo("entToOgen"+schema+f.StructField(), expr)
 		}
 		expr = entToOgen(f, expr)
 		return fmt.Sprintf("%s.%s = %s", rec, f.StructField(), expr), nil
@@ -199,6 +201,13 @@ func setFieldExpr(f *gen.Field, schema, rec, ident string) (string, error) {
 		fmt.Fprintf(buf, "NewOpt%s%s(%s)",
 			schema, f.StructField(),
 			convertTo(schema+f.StructField(), fmt.Sprintf("%s.%s", ident, f.StructField())),
+		)
+		return buf.String(), nil
+	} else if f.IsJSON() {
+		fmt.Fprintf(buf, "%s.%s = NewOpt%s%s(%s)",
+			rec, f.StructField(),
+			schema, f.StructField(),
+			convertTo("entToOgen"+schema+f.StructField(), fmt.Sprintf("%s.%s", ident, f.StructField())),
 		)
 		return buf.String(), nil
 	}
